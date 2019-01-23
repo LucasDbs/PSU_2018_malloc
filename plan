@@ -1,0 +1,38 @@
+/*          LinkedList          */
+
+struct block
+{
+    int size;
+    block *next;
+} block_t
+
+
+/*          Prototypes           */
+
+void *malloc(size_t  size);
+void *realloc(void *ptr , size_t  size);
+void  free(void *ptr);
+show_alloc_mem();
+
+/*          step                */
+
+// check si la size est trop grande
+is_enought_place()
+
+// check si bloc memoire disponible
+is_memory_empty(memory);
+
+// memory allocation
+// utilisation de brk
+alloc_memory(memory, size);
+
+// incremente position dans la memoire
+// utilisation de sbrk
+get_next_heap(block *);
+
+/*          function authorized         */
+
+#include <unistd>
+void *sbrk(intptr_t increment);
+int brk(void *addresse)        
+sbrk()       
