@@ -9,6 +9,7 @@ struct s_block
     struct s_block *next;
     struct s_block *prev;
     int	free;
+    void *data;
 } block_t;
 
 #endif // MALLOC_H
