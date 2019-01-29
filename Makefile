@@ -7,7 +7,8 @@
 
 NAME	=	libmy_malloc.so
 
-SRC	=	src/main.c
+SRC	=	src/main.c \
+		src/malloc.c
 
 OBJ	=	$(SRC:.c=.o)
 

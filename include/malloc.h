@@ -3,14 +3,21 @@
 
 #include <unistd.h>
 
+
+typedef struct s_block *t_block;
 struct s_block
 {
     size_t size;
-    struct s_block *next;
-    struct s_block *prev;
-    int	free;
+    t_block next;
+    t_block prev;
     void *data;
-} block_t;
+    int free;
+};
+
+void free(void *ptr);
+void *malloc(size_t size);
+
+#define BLOCK_SIZE sizeof(void *);
 
 #endif // MALLOC_H
 

@@ -6,46 +6,63 @@
 #include "../include/malloc.h"
 
 struct s_block *memory = NULL;
-static int initialization = 0;
 
-void init_memory()
+void init_mem()
 {
-    printf("test");
-    brk(0); 
-    memory = sbrk(4096);
-    initialization = 1;
+    memory = sbrk(0);
+    sbrk(4096);
+    memory->next = NULL;
+    memory->prev = NULL;
+    memory->free = 0;
+    memory->size = 4096;
 }
 
-void allocation(size_t size)
+t_block split_block(t_block block, size_t size)
 {
-    struct s_block new;
-    struct s_block *tmp = memory;
+    t_block new;
 
-    new.free = 0;
-    new.size = size;
-    new.next = NULL;
-    new.data = sbrk(size);
+    size_t position = memory->size - size - BLOCK_SIZE;
+    new->data = memory->data + (void *)size;
+    new->size = position;
+    memory->data = brk(position);
+}
+
+void add_in_memory(t_block block)
+{
+    t_block tmp = memory;
     if (!memory) {
-        new.prev = NULL;
+        init_mem();
     } else {
         while (tmp->next)
             tmp = tmp->next;
-        tmp->next = &new;
-        tmp = tmp->next;
+        tmp->next = block;
+        block->prev = tmp;
     }
 }
 
-void *t_malloc(size_t size)
+void *malloc(size_t size)
 {
-    if (initialization == 0)
-        init_memory();
-    allocation(size);
+    t_block block = sbrk(0);
+
+
+
+    add_in_memory(block);
+    return block->data;
 }
 
-void t_free(void *ptr)
+void free(void *ptr)
 {
-    struct s_block *tmp = memory;
+    t_block tmp = memory;
+    t_block save;
 
-    memory->prev->next = memory->next;
-    brk(memory);
+    while (tmp->next != ptr && tmp->next != NULL)
+        tmp = tmp->next;
+    if (!tmp)
+        return;
+
+    save = tmp->next;    
+    tmp->next = tmp->next->next;
+    tmp->next->prev = tmp;
+    if (brk(save) == -1)
+        printf("error");
 }
