@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 ** EPITECH PROJECT, 2019
 ** Lucas Duboisse
@@ -6,9 +5,6 @@
 ** main.c
 */
 
-=======
-#include <dlfcn.h>
->>>>>>> e1ecb1f2777656e5c7da6a275796ae02270948b9
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -33,7 +29,6 @@ int my_strlen(const char *str)
         return (i);
 }
 
-<<<<<<< HEAD
 
 int main(int argc, char const *argv[])
 {
@@ -48,27 +43,4 @@ int main(int argc, char const *argv[])
         my_putstr(str);
         free(test);
         return 0;
-=======
-int main()
-{
-        printf("inside malloc test\n");
-        char *str = malloc(sizeof(char) * 4);
-
-        str[0] = '1';
-        str[1] = '2';
-        str[2] = '3';
-        str[3] = '\0';
-
-        char *str2 = malloc(sizeof(char) * 4);
-
-        str2[0] = '4';
-        str2[1] = '5';
-        str2[2] = '6';
-        str2[3] = '\0';
-
-        printf("str = %s\n", str);
-
-        printf("str = %s\n", str2);
-    return 0;
->>>>>>> e1ecb1f2777656e5c7da6a275796ae02270948b9
 }

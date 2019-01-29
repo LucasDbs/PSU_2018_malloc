@@ -6,7 +6,6 @@
 */
 
 #include "basics.h"
-#include "malloc.h"
 
 t_block get_block(void *p)
 {
@@ -17,8 +16,6 @@ t_block get_block(void *p)
 
 int valid_addr(void *p)
 {
-        // void *base = get_block_value();
-        
         if (base) {
                 if (p>base && p<sbrk(0)) {
                         return (p == (get_block(p))->ptr);
