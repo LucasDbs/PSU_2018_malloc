@@ -5,10 +5,7 @@
 ** main.c
 */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include "../include/basics.h"
+#include "malloc.h"
 
 void myputchar(char c)
 {

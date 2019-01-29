@@ -1,68 +1,135 @@
-#include <dlfcn.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include "../include/malloc.h"
+/*
+** EPITECH PROJECT, 2019
+** Lucas Duboisse
+** File description:
+** basics.c
+*/
 
-struct s_block *memory = NULL;
+#include "malloc.h"
 
-void init_mem()
+void *base=NULL;
+
+void myputchar(char c)
 {
-    memory = sbrk(0);
-    sbrk(4096);
-    memory->next = NULL;
-    memory->prev = NULL;
-    memory->free = 0;
-    memory->size = 4096;
+	write(1, &c, 1);
 }
 
-t_block split_block(t_block block, size_t size)
+void my_putstr(const char *str)
 {
-    t_block new;
-
-    size_t position = memory->size - size - BLOCK_SIZE;
-    new->data = memory->data + (void *)size;
-    new->size = position;
-    memory->data = brk(position);
+        write(1, str, strlen(str));
 }
 
-void add_in_memory(t_block block)
+int my_strlen(const char *str)
 {
-    t_block tmp = memory;
-    if (!memory) {
-        init_mem();
-    } else {
-        while (tmp->next)
-            tmp = tmp->next;
-        tmp->next = block;
-        block->prev = tmp;
-    }
+        int i = 0;
+
+        while (str[i])
+                i++;
+        return (i);
 }
 
 void *malloc(size_t size)
 {
-    t_block block = sbrk(0);
+        t_block b, last;
+        size_t s = align4(size);
 
-
-
-    add_in_memory(block);
-    return block->data;
+        if (base) {
+        /* First find a block */
+                last = base;
+                b = find_block(&last, s);
+                if (b) {
+                /* can we split */
+                        if ((b->size - s) >= ( BLOCK_SIZE + 4))
+                                split_block(b, s);
+                        b->free =0;
+                } else {
+                /* No fitting block , extend the heap */
+                        b = extend_heap(last, s);
+                        if (!b)
+                                return(NULL);
+                }
+        } else {
+        /* first time */
+                b = extend_heap(NULL ,s);
+                if (!b)
+                        return(NULL);
+                base = b;
+        }
+        return(b->data);
 }
 
-void free(void *ptr)
+void free(void *p)
 {
-    t_block tmp = memory;
-    t_block save;
+        t_block b;
 
-    while (tmp->next != ptr && tmp->next != NULL)
-        tmp = tmp->next;
-    if (!tmp)
-        return;
+        if (valid_addr(p)) {
+                b = get_block(p);
+                b->free = 1;
+                /* fusion with previous if possible */
+                if (b->prev && b->prev->free)
+                        b = fusion(b->prev );
+                /* then fusion with next */
+                if (b->next && b->next->free)
+                        fusion(b);
+                else {
+                /* free the end of the heap */
+                        if (b->prev)
+                                b->prev->next = NULL;
+                        else
+                /* No more block !*/
+                                base = NULL;
+                        brk(b);
+                }
+        }
+ }
 
-    save = tmp->next;    
-    tmp->next = tmp->next->next;
-    tmp->next->prev = tmp;
-    if (brk(save) == -1)
-        printf("error");
+void copy_block(t_block src, t_block dst)
+{
+        int *sdata, *ddata;
+        size_t i;
+
+        sdata = src->ptr;
+        ddata = dst->ptr;
+        for (i=0; i*4<src ->size && i*4<dst ->size; i++)
+                ddata[i] = sdata[i];
+}
+
+void *realloc(void *p, size_t size)
+{
+        size_t s;
+        t_block b, new;
+        void *newp;
+
+        if (!p)
+                return (malloc(size));
+        if ( valid_addr(p)) {
+                s = align4(size);
+                b = get_block(p);
+                if (b->size >= s) {
+                        if (b->size - s >= ( BLOCK_SIZE + 4))
+                                split_block (b,s);
+                } else {
+                /* Try fusion with next if possible */
+                        if (b->next && b->next ->free && (b->size + BLOCK_SIZE + b->next ->size) >= s) {
+                                fusion(b);
+                                if (b->size - s >= ( BLOCK_SIZE + 4))
+                                        split_block (b,s);
+                        } else {
+                        /* good old realloc with a new block */
+                                newp = malloc(s);
+                                if (!newp)
+                                /* we’re doomed ! */
+                                        return (NULL );
+                                /* I assume this work ! */
+                                new = get_block(newp);
+                                /* Copy data */
+                                copy_block(b,new);
+                                /* free the old one */
+                                free(p);
+                                return (newp);
+                        }
+                }
+                return (p);
+        }
+        return (NULL);
 }
