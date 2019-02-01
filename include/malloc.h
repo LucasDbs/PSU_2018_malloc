@@ -2,43 +2,37 @@
 ** EPITECH PROJECT, 2019
 ** Lucas Duboisse
 ** File description:
-** basics.h
+** malloc.h
 */
 
-#if !defined(MALLOC_H)
-#define MALLOC_H
+#if !defined(BASICS_H_)
+#define BASICS_H_
 
 #include <unistd.h>
-#include <string.h>
-#include <stdio.h>
 
-extern void *base;
+#define align4(size) (((((size)-1)>>2)<<2)+4)
+#define BLOCK_SIZE sizeof(struct block)
 
-typedef struct s_block * t_block;
-struct s_block {
+typedef struct block * block_s;
+struct block {
+        block_s next;
+        block_s prev;
         size_t size;
-        t_block next;
-        t_block prev;
-        int free;
-        void *ptr;
-        char data[1];
+        long int free;
+        void *data;
 };
 
-#define BLOCK_SIZE sizeof(struct s_block)
-#define align4(x) (((((x)-1)>>2)<<2)+4)
-
-void myputchar(char c);
-void my_putstr(const char *);
-int my_strlen(const char *);
 void *malloc(size_t);
 void free(void *);
 void *realloc(void *, size_t);
 
-t_block find_block(t_block *last, size_t size);
-t_block extend_heap(t_block last, size_t size);
-void split_block(t_block b, size_t s);
-t_block fusion(t_block b);
-int valid_addr(void *p);
-t_block get_block(void *p);
+void split_next(block_s, size_t);
+void merge_next(block_s);
+block_s find_block(block_s *, size_t);
+void copy_block(size_t, void *, void *);
 
-#endif // MALLOC_H
+void *base_heap(void);
+block_s extend_heap(size_t, block_s);
+int heap_is_empty(void);
+
+#endif // BASICS_H_
