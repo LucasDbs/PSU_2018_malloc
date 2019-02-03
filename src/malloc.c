@@ -25,17 +25,17 @@ void *malloc(size_t size)
         if (length + sizeof(size_t) < block->size)
                 split_next(block, length);
         block->free = 0;
-        return block->data;
+        return (block->data);
 }
 
-void free(void *p)
+void free(void *ptr)
 {
         block_s b = NULL;
 
-        if (!p || p < base_heap() || p > sbrk(0))
+        if (!ptr || ptr < base_heap() || ptr > sbrk(0))
                 return;
-        b = (block_s) p - 1;
-        if (b->data != p)
+        b = (block_s) ptr - 1;
+        if (b->data != ptr)
                 return;
         b->free = 1;
         if (b->next && b->next->free)
@@ -63,5 +63,5 @@ void *realloc(void *ptr, size_t size)
                         free(ptr);
                 }
         }
-        return new;
+        return (new);
 }

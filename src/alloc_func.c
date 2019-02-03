@@ -9,13 +9,13 @@
 
 block_s find_block(block_s *prev, size_t size)
 {
-        block_s b = base_heap();
+        block_s block = base_heap();
 
-        while (b && !(b->free && b->size >= size )) {
-                *prev = b;
-                b = b->next;
+        while (block && !(block->free && block->size >= size )) {
+                *prev = block;
+                block = block->next;
         }
-        return (b);
+        return (block);
 }
 
 void split_next(block_s block, size_t size)
@@ -33,12 +33,12 @@ void split_next(block_s block, size_t size)
         block->size = size - BLOCK_SIZE;
 }
 
-void merge_next(block_s b)
+void merge_next(block_s block)
 {
-        b->size +=b->next->size + BLOCK_SIZE;
-        b->next = b->next->next;
-        if (b->next)
-                b->next->prev = b;
+        block->size +=block->next->size + BLOCK_SIZE;
+        block->next = block->next->next;
+        if (block->next)
+                block->next->prev = block;
 }
 
 void copy_block(size_t length, void *new, void *ptr)
