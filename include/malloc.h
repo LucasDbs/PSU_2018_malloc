@@ -11,10 +11,11 @@
 #include "struct.h"
 
 int align_chunk(size_t size);
-void split_next(struct chunk_s *, size_t);
 void copy_block(size_t, void *, void *);
 void *get_base(void);
 struct chunk_s *expand_mem(size_t, struct chunk_s *);
-int heap_is_empty();
+int is_chunk_empty(void);
+void fusion_chunk(struct chunk_s *chunk);
+void split_chunk(struct chunk_s *chunk, size_t size);
 
 #endif

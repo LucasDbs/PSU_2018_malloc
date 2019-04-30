@@ -12,7 +12,6 @@
 
 #define CHUNK_SIZE sizeof(struct chunk_s)
 
-
 struct chunk_s
 {
     struct chunk_s *next;

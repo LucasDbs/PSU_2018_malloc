@@ -1,13 +1,11 @@
 /*
 ** EPITECH PROJECT, 2019
-** Lucas Duboisse
+** Leta && Sensei
 ** File description:
 ** malloc.c
 */
 
-// export LD_PRELOAD=$PWD/libmy_malloc.so
-
-#include "../include/malloc.h"
+#include "malloc.h"
 
 void *malloc(size_t size)
 {
@@ -22,44 +20,16 @@ void *malloc(size_t size)
     }
     memory_lenght = align_chunk(CHUNK_SIZE + size) + sizeof(size_t);
     if (memory_lenght < memory->size)
-        split_next(memory, align_chunk(CHUNK_SIZE + size));
+        split_chunk(memory, align_chunk(CHUNK_SIZE + size));
     memory->free = 0;
     return (memory->data);
 }
 
-void fusion_chunk(struct chunk_s *chunk)
-{
-    if (chunk->next && chunk->next->free) {
-        chunk = chunk;
-    } else if (chunk->prev->free) {
-        chunk = chunk->prev;
-    } else {
-        return;
-    }
-    chunk->size += chunk->next->size + CHUNK_SIZE;
-    chunk->next = chunk->next->next;
-    if (chunk->next)
-        chunk->next->prev = chunk;
-}
-
-int is_chunk_empty(void)
-{
-    struct chunk_s *base = get_base();
-    
-    while (base) {
-        if (base->free == 0)
-            return 0;
-        base = base->next;
-    }
-    return (1);
-}
-
-
 void free(void *data_ptr)
 {
-    struct chunk_s *ptr = (struct chunk_s *) data_ptr - 1;;
+    struct chunk_s *ptr = (struct chunk_s *) data_ptr - 1;
     struct chunk_s * base = get_base();
-
+    
     if (!ptr || ptr < base || ptr > sbrk(0) || ptr->data != data_ptr) {
         return;
     } else {
@@ -72,20 +42,25 @@ void free(void *data_ptr)
     }
 }
 
-void *realloc(void *ptr, size_t size)
+void *realloc(void *data_ptr, size_t size)
 {
+    struct chunk_s *ptr = (struct chunk_s*) data_ptr - 1;
     void *new = malloc(size);
-    struct chunk_s *b = NULL;
-    size_t length = 0;
+    char *dest = new;
+    char *to_cpy = data_ptr;
+    size_t len = 0;
 
-    if (new && ptr && ptr >= get_base() && ptr <= sbrk(0)) {
-        b = (struct chunk_s*) ptr - 1;
-        if (b->data == ptr) {
-            length = b->size > size ? size : b->size;
-            copy_block(length, new, ptr);
-            free(ptr);
+    if (!data_ptr || !new || data_ptr > sbrk(0) || data_ptr < get_base()) {
+        return (new);
+    } else if (ptr->data != data_ptr) {
+        return (new);
+    } else {
+        len = ptr->size > size ? size : ptr->size;
+        for (size_t i = 0; i < len; i++, dest++, to_cpy++) {
+            *dest = *to_cpy;
         }
+        free(data_ptr);
+        return (new);
     }
-    return (new);
 }
 
