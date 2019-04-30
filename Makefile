@@ -8,17 +8,21 @@
 NAME	=	libmy_malloc.so
 
 SRC	=	src/malloc.c		\
-		src/alloc_func.c	\
-		src/heap_func.c
+		src/expand.c		\
+		src/utils.c			\
+		src/search.c
 
 OBJ	=	$(SRC:.c=.o)
 
-CFLAGS	=	-W -Wpadded -Wall -Wextra -shared -fpic -Iinclude/ -lm
+CFLAGS	=	-W -Wall -Wextra -shared -fpic -Iinclude/ -lm
 
 all:		$(NAME)
 
 $(NAME):
 		gcc -o $(NAME) $(SRC) $(CFLAGS)
+
+test:
+	gcc test/main.c src/*.c -Iinclude
 
 clean:
 		rm -f $(OBJ)

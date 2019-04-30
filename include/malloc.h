@@ -1,38 +1,20 @@
 /*
 ** EPITECH PROJECT, 2019
-** Lucas Duboisse
+** Sabri Ouaked
 ** File description:
 ** malloc.h
 */
 
-#if !defined(BASICS_H_)
-#define BASICS_H_
+#if !defined(MALLOC_H)
+#define MALLOC_H
 
-#include <unistd.h>
+#include "struct.h"
 
-#define align4(size) (((((size)-1)>>2)<<2)+4)
-#define BLOCK_SIZE sizeof(struct block)
-
-typedef struct block * block_s;
-struct block {
-        block_s next;
-        block_s prev;
-        size_t size;
-        long int free;
-        void *data;
-};
-
-void *malloc(size_t);
-void free(void *);
-void *realloc(void *, size_t);
-
-void split_next(block_s, size_t);
-void merge_next(block_s);
-block_s find_block(block_s *, size_t);
+int align_chunk(size_t size);
+void split_next(struct chunk_s *, size_t);
 void copy_block(size_t, void *, void *);
+void *get_base(void);
+struct chunk_s *expand_mem(size_t, struct chunk_s *);
+int heap_is_empty();
 
-void *base_heap(void);
-block_s extend_heap(size_t, block_s);
-int heap_is_empty(void);
-
-#endif // BASICS_H_
+#endif
