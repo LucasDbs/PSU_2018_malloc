@@ -42,7 +42,7 @@ void fusion_chunk(struct chunk_s *chunk)
         chunk->next->prev = chunk;
 }
 
-int heap_is_empty(void)
+int is_chunk_empty(void)
 {
     struct chunk_s *base = get_base();
     
@@ -55,21 +55,20 @@ int heap_is_empty(void)
 }
 
 
-void free(void *ptr)
+void free(void *data_ptr)
 {
-    struct chunk_s *b = NULL;
+    struct chunk_s *ptr = (struct chunk_s *) data_ptr - 1;;
     struct chunk_s * base = get_base();
 
-    if (!ptr || ptr < get_base() || ptr > sbrk(0))
-            return;
-    b = (struct chunk_s *) ptr - 1;
-    if (b->data != ptr)
-            return;
-    b->free = 1;
-    fusion_chunk(b);
-    if (heap_is_empty()) {
-            brk(base->next);
-            base->next = NULL;
+    if (!ptr || ptr < base || ptr > sbrk(0) || ptr->data != data_ptr) {
+        return;
+    } else {
+        ptr->free = 1;
+        fusion_chunk(ptr);
+    }
+    if (is_chunk_empty()) {
+        brk(base->next);
+        base->next = NULL;
     }
 }
 

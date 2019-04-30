@@ -9,7 +9,8 @@
 
 void split_next(struct chunk_s *chunk, size_t size)
 {
-    struct chunk_s *new = (struct chunk_s*)((char *) chunk + size);
+    char *precision = (char *)chunk + size;
+    struct chunk_s *new = (struct chunk_s*)precision;
 
     new->next = chunk->next;
     new->prev = chunk;
@@ -17,7 +18,7 @@ void split_next(struct chunk_s *chunk, size_t size)
     new->free = 1;
     new->data = new + 1;
     if (chunk->next)
-            chunk->next->prev = new;
+        chunk->next->prev = new;
     chunk->next = new;
     chunk->size = size - CHUNK_SIZE;
 }
