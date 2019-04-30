@@ -11,14 +11,14 @@ void *get_base(void)
 {
     static struct chunk_s *base = NULL;
 
-    if (!base) {
-        base = sbrk(align_chunk(CHUNK_SIZE));
-        base->next = NULL;
-        base->prev = NULL;
-        base->size = 0;
-        base->free = 1;
-        base->data = NULL;
-    }
+    if (base)
+        return (base);
+    base = sbrk(align_chunk(CHUNK_SIZE));
+    base->next = NULL;
+    base->prev = NULL;
+    base->size = 0;
+    base->free = 1;
+    base->data = NULL;
     return (base);
 }
 
